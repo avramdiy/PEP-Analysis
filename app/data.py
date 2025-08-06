@@ -53,13 +53,17 @@ def show_00_17():
 def plot_close_comparison():
     plt.figure(figsize=(12, 7))
 
-    plt.plot(df_77_89['Date'], df_77_89['Close'], label='1977-1989')
-    plt.plot(df_90_99['Date'], df_90_99['Close'], label='1990-1999')
-    plt.plot(df_00_17['Date'], df_00_17['Close'], label='2000-2017')
+    plt.plot(df_77_89['Date'], df_77_89['Close'], label='CL 1977-1989')
+    plt.plot(df_90_99['Date'], df_90_99['Close'], label='CL 1990-1999')
+    plt.plot(df_00_17['Date'], df_00_17['Close'], label='CL 2000-2017')
 
-    plt.title('PEP Close Price Comparison Across Periods')
+    plt.plot(df_77_89['Date'], df_77_89['Open'], label='OP 1977-1989')
+    plt.plot(df_90_99['Date'], df_90_99['Open'], label='OP 1990-1999')
+    plt.plot(df_00_17['Date'], df_00_17['Open'], label='OP 2000-2017')
+
+    plt.title('PEP Close Price to Open Price Comparison Across Periods')
     plt.xlabel('Date')
-    plt.ylabel('Close Price')
+    plt.ylabel('Close | Open Price')
     plt.legend()
     plt.grid(True)
 
