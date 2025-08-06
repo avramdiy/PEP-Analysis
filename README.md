@@ -33,3 +33,5 @@
 - Modified the prior route to show a comparison of the Open price to the Close price through the three datasets. Adjusted the names of the X | Y axes, and clarified the legend for further understanding.
 
 ### 5th Commit
+
+- Built an interactive plot using Plotly.js to provide further visibility by zooming in on custom timeframes for users.

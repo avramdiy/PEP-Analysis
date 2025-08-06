@@ -2,6 +2,8 @@ from flask import Flask, render_template_string, Response
 import matplotlib.pyplot as plt
 import pandas as pd
 import io
+import plotly.graph_objs as go
+import plotly.io as pio
 
 app = Flask(__name__)
 
@@ -30,6 +32,12 @@ def render_table(df, title):
         <div class="container mt-5">
             <h1>{title}</h1>
             {html_table}
+            <br>
+            <a href="/">1977-1989</a> | 
+            <a href="/90_99">1990-1999</a> | 
+            <a href="/00_17">2000-2017</a> | 
+            <a href="/plot_close_comparison">Static Close/Open Plot</a> | 
+            <a href="/interactive_plot">Interactive Plot</a>
         </div>
     </body>
     </html>
@@ -47,7 +55,6 @@ def show_90_99():
 @app.route('/00_17')
 def show_00_17():
     return render_table(df_00_17, "PEP Data: 2000–2017")
-
 
 @app.route('/plot_close_comparison')
 def plot_close_comparison():
@@ -74,6 +81,49 @@ def plot_close_comparison():
     img.seek(0)
 
     return Response(img.getvalue(), mimetype='image/png')
+
+@app.route('/interactive_plot')
+def interactive_plot():
+    traces = []
+
+    # Close Prices
+    traces.append(go.Scatter(x=df_77_89['Date'], y=df_77_89['Close'], mode='lines', name='CL 1977-1989'))
+    traces.append(go.Scatter(x=df_90_99['Date'], y=df_90_99['Close'], mode='lines', name='CL 1990-1999'))
+    traces.append(go.Scatter(x=df_00_17['Date'], y=df_00_17['Close'], mode='lines', name='CL 2000-2017'))
+
+    # Open Prices
+    traces.append(go.Scatter(x=df_77_89['Date'], y=df_77_89['Open'], mode='lines', name='OP 1977-1989'))
+    traces.append(go.Scatter(x=df_90_99['Date'], y=df_90_99['Open'], mode='lines', name='OP 1990-1999'))
+    traces.append(go.Scatter(x=df_00_17['Date'], y=df_00_17['Open'], mode='lines', name='OP 2000-2017'))
+
+    layout = go.Layout(
+        title='Interactive PEP Open vs Close Prices',
+        xaxis=dict(title='Date', rangeslider=dict(visible=True)),
+        yaxis=dict(title='Price'),
+        hovermode='closest'
+    )
+
+    fig = go.Figure(data=traces, layout=layout)
+    plot_html = pio.to_html(fig, full_html=False)
+
+    template_html = """
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Interactive Plot</title>
+        <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    </head>
+    <body>
+        <div style="width:90%; margin:auto;">
+            <h1>Interactive Open vs Close Price Chart</h1>
+            {{ plot_html | safe }}
+            <br>
+            <a href="/">Back to Tables</a>
+        </div>
+    </body>
+    </html>
+    """
+    return render_template_string(template_html, plot_html=plot_html)
 
 if __name__ == '__main__':
     app.run(debug=True)
