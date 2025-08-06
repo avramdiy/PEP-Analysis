@@ -1,5 +1,7 @@
-from flask import Flask, render_template_string
+from flask import Flask, render_template_string, Response
+import matplotlib.pyplot as plt
 import pandas as pd
+import io
 
 app = Flask(__name__)
 
@@ -45,6 +47,29 @@ def show_90_99():
 @app.route('/00_17')
 def show_00_17():
     return render_table(df_00_17, "PEP Data: 2000–2017")
+
+
+@app.route('/plot_close_comparison')
+def plot_close_comparison():
+    plt.figure(figsize=(12, 7))
+
+    plt.plot(df_77_89['Date'], df_77_89['Close'], label='1977-1989')
+    plt.plot(df_90_99['Date'], df_90_99['Close'], label='1990-1999')
+    plt.plot(df_00_17['Date'], df_00_17['Close'], label='2000-2017')
+
+    plt.title('PEP Close Price Comparison Across Periods')
+    plt.xlabel('Date')
+    plt.ylabel('Close Price')
+    plt.legend()
+    plt.grid(True)
+
+    # Save plot to bytes buffer
+    img = io.BytesIO()
+    plt.savefig(img, format='png')
+    plt.close()
+    img.seek(0)
+
+    return Response(img.getvalue(), mimetype='image/png')
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -26,6 +26,8 @@
 
 ### 3rd Commit
 
+- Added a plot_close_comparison route to show the difference of growth throughout the timeline of the datasets.
+
 ### 4th Commit
 
 ### 5th Commit
